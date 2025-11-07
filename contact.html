@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>联系作者 - Quick Download Station</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* 基础样式重置 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    }
+    
+    :root {
+      --bg-color: #f5f7fa;
+      --card-bg: #ffffff;
+      --text-color: #2c3e50;
+      --subtext-color: #5a6c7d;
+      --accent-color: #00c853;
+      --accent-gradient: linear-gradient(135deg, #00c853 0%, #64dd17 100%);
+      --shadow-color: rgba(0, 0, 0, 0.08);
+      --footer-color: #7f8c8d;
+    }
+    
+    [data-theme="dark"] {
+      --bg-color: #1a1a1a;
+      --card-bg: #2d2d2d;
+      --text-color: #e0e0e0;
+      --subtext-color: #a0a0a0;
+      --accent-color: #00c853;
+      --accent-gradient: linear-gradient(135deg, #00c853 0%, #64dd17 100%);
+      --shadow-color: rgba(0, 0, 0, 0.3);
+      --footer-color: #a0a0a0;
+    }
+    
+    body {
+      background: linear-gradient(135deg, var(--bg-color) 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--text-color);
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    
+    /* 标题样式 */
+    .header {
+      text-align: center;
+      margin: 40px 0 40px;
+      position: relative;
+    }
+    
+    .title {
+      font-size: 42px;
+      font-weight: 800;
+      margin-bottom: 10px;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 2px 10px rgba(0, 200, 83, 0.2);
+    }
+    
+    .subtitle {
+      font-size: 18px;
+      color: var(--subtext-color);
+      font-weight: 500;
+    }
+    
+    /* 控制面板 */
+    .control-panel {
+      display: flex;
+      gap: 15px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .control-btn {
+      background: var(--card-bg);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 30px;
+      color: var(--text-color);
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 15px var(--shadow-color);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .control-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px var(--shadow-color);
+    }
+    
+    .control-btn.active {
+      background: var(--accent-gradient);
+      color: white;
+    }
+    
+    /* 作者信息样式 */
+    .author-info {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 15px;
+      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 30px;
+      box-shadow: 0 4px 15px var(--shadow-color);
+      backdrop-filter: blur(5px);
+    }
+    
+    [data-theme="dark"] .author-info {
+      background: rgba(45, 45, 45, 0.7);
+    }
+    
+    .author-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--accent-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      margin-right: 12px;
+    }
+    
+    .author-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-color);
+    }
+    
+    /* 联系信息卡片 */
+    .contact-container {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+      width: 100%;
+      max-width: 800px;
+      margin-bottom: 60px;
+    }
+    
+    .contact-card {
+      display: flex;
+      flex-direction: column;
+      background: var(--card-bg);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px var(--shadow-color);
+      transition: all 0.3s ease;
+    }
+    
+    .contact-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px var(--shadow-color);
+    }
+    
+    .card-header {
+      background: var(--accent-gradient);
+      height: 6px;
+    }
+    
+    .card-content {
+      padding: 25px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    
+    .card-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      background: var(--accent-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 22px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+    
+    .card-text {
+      flex: 1;
+    }
+    
+    .card-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-color);
+      margin-bottom: 8px;
+    }
+    
+    .card-desc {
+      font-size: 16px;
+      color: var(--subtext-color);
+      line-height: 1.5;
+    }
+    
+    .contact-details {
+      margin-top: 15px;
+    }
+    
+    .contact-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      padding: 8px 0;
+    }
+    
+    .contact-item i {
+      width: 30px;
+      color: var(--accent-color);
+      font-size: 18px;
+    }
+    
+    .contact-item span {
+      color: var(--text-color);
+      font-size: 16px;
+    }
+    
+    /* 返回按钮 */
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: var(--accent-gradient);
+      color: white;
+      text-decoration: none;
+      border-radius: 30px;
+      font-weight: 600;
+      margin-top: 20px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 200, 83, 0.3);
+    }
+    
+    .back-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0, 200, 83, 0.4);
+    }
+    
+    /* 页脚样式 */
+    .footer {
+      margin-top: auto;
+      text-align: center;
+      padding: 20px;
+      color: var(--footer-color);
+      font-size: 14px;
+    }
+    
+    .version {
+      margin-top: 5px;
+      font-size: 12px;
+      opacity: 0.7;
+    }
+    
+    /* 响应式调整 */
+    @media (max-width: 768px) {
+      .title {
+        font-size: 32px;
+      }
+      
+      .contact-container {
+        gap: 20px;
+      }
+      
+      .card-content {
+        padding: 20px;
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .author-info {
+        flex-direction: column;
+        text-align: center;
+        padding: 15px;
+      }
+      
+      .author-avatar {
+        margin-right: 0;
+        margin-bottom: 8px;
+      }
+      
+      .control-panel {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 标题区域 -->
+  <div class="header">
+    <h1 class="title" data-lang="zh">联系作者</h1>
+    <p class="subtitle" data-lang="zh">有任何问题或建议，欢迎联系我</p>
+    
+    <!-- 控制面板 -->
+    <div class="control-panel">
+      <button class="control-btn" id="light-theme">
+        <i class="fas fa-sun"></i>
+        <span data-lang="zh">浅色</span>
+      </button>
+      <button class="control-btn" id="dark-theme">
+        <i class="fas fa-moon"></i>
+        <span data-lang="zh">深色</span>
+      </button>
+      <button class="control-btn active" id="system-theme">
+        <i class="fas fa-desktop"></i>
+        <span data-lang="zh">跟随系统</span>
+      </button>
+      <button class="control-btn" id="lang-zh">
+        <i class="fas fa-language"></i>
+        <span>中文</span>
+      </button>
+      <button class="control-btn" id="lang-en">
+        <i class="fas fa-language"></i>
+        <span>English</span>
+      </button>
+    </div>
+    
+    <!-- 作者信息 -->
+    <div class="author-info">
+      <div class="author-avatar">
+        <i class="fas fa-user"></i>
+      </div>
+      <div class="author-name">作者: kyle_A_10000</div>
+    </div>
+  </div>
+
+  <!-- 联系信息卡片 -->
+  <div class="contact-container">
+    <!-- 基本信息卡片 -->
+    <div class="contact-card">
+      <div class="card-header"></div>
+      <div class="card-content">
+        <div class="card-icon">
+          <i class="fas fa-user-circle"></i>
+        </div>
+        <div class="card-text">
+          <div class="card-title" data-lang="zh">基本信息</div>
+          <div class="card-desc" data-lang="zh">关于作者的一些基本信息</div>
+          <div class="contact-details">
+            <div class="contact-item">
+              <i class="fas fa-user"></i>
+              <span>kyle_A_10000</span>
+            </div>
+            <div class="contact-item">
+              <i class="fas fa-laptop-code"></i>
+              <span>开发者</span>
+            </div>
+            <div class="contact-item">
+              <i class="fas fa-map-marker-alt"></i>
+              <span>中国-上海</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 联系方式卡片 -->
+    <div class="contact-card">
+      <div class="card-header"></div>
+      <div class="card-content">
+        <div class="card-icon">
+          <i class="fas fa-envelope"></i>
+        </div>
+        <div class="card-text">
+          <div class="card-title" data-lang="zh">联系方式</div>
+          <div class="card-desc" data-lang="zh">通过这些方式联系我</div>
+          <div class="contact-details">
+            <div class="contact-item">
+              <i class="fas fa-envelope"></i>
+              <span>Rex2516@163.com</span>
+            </div>
+            <div class="contact-item">
+              <i class="fab fa-qq"></i>
+              <span>3606076796</span>
+            </div>
+            <div class="contact-item">
+              <i class="fab fa-github"></i>
+              <span>github.com/Rex2516S</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 反馈与建议卡片 -->
+    <div class="contact-card">
+      <div class="card-header"></div>
+      <div class="card-content">
+        <div class="card-icon">
+          <i class="fas fa-comments"></i>
+        </div>
+        <div class="card-text">
+          <div class="card-title" data-lang="zh">反馈与建议</div>
+          <div class="card-desc" data-lang="zh">欢迎提供宝贵的意见和建议</div>
+          <div class="contact-details">
+            <div class="contact-item">
+              <i class="fas fa-bug"></i>
+              <span data-lang="zh">报告问题或Bug</span>
+            </div>
+            <div class="contact-item">
+              <i class="fas fa-lightbulb"></i>
+              <span data-lang="zh">提出功能建议</span>
+            </div>
+            <div class="contact-item">
+              <i class="fas fa-handshake"></i>
+              <span data-lang="zh">合作与交流</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 项目信息卡片 -->
+    <div class="contact-card">
+      <div class="card-header"></div>
+      <div class="card-content">
+        <div class="card-icon">
+          <i class="fas fa-code-branch"></i>
+        </div>
+        <div class="card-text">
+          <div class="card-title" data-lang="zh">项目信息</div>
+          <div class="card-desc" data-lang="zh">关于Quick Download Station</div>
+          <div class="contact-details">
+            <div class="contact-item">
+              <i class="fas fa-shield-alt"></i>
+              <span data-lang="zh">所有资源安全无毒</span>
+            </div>
+            <div class="contact-item">
+              <i class="fas fa-download"></i>
+              <span data-lang="zh">持续更新优质资源</span>
+            </div>
+            <div class="contact-item">
+              <i class="fas fa-heart"></i>
+              <span data-lang="zh">感谢您的支持</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 返回主页按钮 -->
+  <a href="index.html" class="back-btn">
+    <i class="fas fa-arrow-left"></i>
+    <span data-lang="zh">返回主页</span>
+  </a>
+
+  <!-- 页脚 -->
+  <div class="footer">
+    <p data-lang="zh">© 2025 kyle_A_10000 Quick Download Station | 所有资源由kyle_A_10000制作/搬运</p>
+    <p class="version">V4</p>
+  </div>
+
+  <script>
+    // 语言切换功能
+    const langZhBtn = document.getElementById('lang-zh');
+    const langEnBtn = document.getElementById('lang-en');
+    
+    // 语言文本映射
+    const translations = {
+      zh: {
+        // 标题
+        "联系作者": "联系作者",
+        "有任何问题或建议，欢迎联系我": "有任何问题或建议，欢迎联系我",
+        
+        // 主题按钮
+        "浅色": "浅色",
+        "深色": "深色",
+        "跟随系统": "跟随系统",
+        
+        // 卡片标题
+        "基本信息": "基本信息",
+        "关于作者的一些基本信息": "关于作者的一些基本信息",
+        "联系方式": "联系方式",
+        "通过这些方式联系我": "通过这些方式联系我",
+        "反馈与建议": "反馈与建议",
+        "欢迎提供宝贵的意见和建议": "欢迎提供宝贵的意见和建议",
+        "项目信息": "项目信息",
+        "关于Quick Download Station": "关于Quick Download Station",
+        
+        // 联系项目
+        "报告问题或Bug": "报告问题或Bug",
+        "提出功能建议": "提出功能建议",
+        "合作与交流": "合作与交流",
+        "所有资源安全无毒": "所有资源安全无毒",
+        "持续更新优质资源": "持续更新优质资源",
+        "感谢您的支持": "感谢您的支持",
+        
+        // 按钮
+        "返回主页": "返回主页",
+        
+        // 页脚
+        "© 2025 kyle_A_10000 Quick Download Station | 所有资源由kyle_A_10000制作/搬运": "© 2025 kyle_A_10000 Quick Download Station | 所有资源由kyle_A_10000制作/搬运"
+      },
+      en: {
+        // 标题
+        "联系作者": "Contact Author",
+        "有任何问题或建议，欢迎联系我": "If you have any questions or suggestions, feel free to contact me",
+        
+        // 主题按钮
+        "浅色": "Light",
+        "深色": "Dark",
+        "跟随系统": "System",
+        
+        // 卡片标题
+        "基本信息": "Basic Information",
+        "关于作者的一些基本信息": "Some basic information about the author",
+        "联系方式": "Contact Methods",
+        "通过这些方式联系我": "Contact me through these methods",
+        "反馈与建议": "Feedback & Suggestions",
+        "欢迎提供宝贵的意见和建议": "Welcome to provide valuable feedback and suggestions",
+        "项目信息": "Project Information",
+        "关于Quick Download Station": "About Quick Download Station",
+        
+        // 联系项目
+        "报告问题或Bug": "Report issues or bugs",
+        "提出功能建议": "Suggest new features",
+        "合作与交流": "Cooperation and communication",
+        "所有资源安全无毒": "All resources are safe and virus-free",
+        "持续更新优质资源": "Continuously update high-quality resources",
+        "感谢您的支持": "Thank you for your support",
+        
+        // 按钮
+        "返回主页": "Back to Home",
+        
+        // 页脚
+        "© 2025 kyle_A_10000 Quick Download Station | 所有资源由kyle_A_10000制作/搬运": "© 2025 kyle_A_10000 Quick Download Station | All resources created/curated by kyle_A_10000"
+      }
+    };
+
+    // 初始化语言
+    function initLanguage() {
+      const savedLang = localStorage.getItem('language') || 'zh';
+      setLanguage(savedLang);
+      updateActiveLangButton(savedLang);
+    }
+    
+    // 设置语言
+    function setLanguage(lang) {
+      document.documentElement.setAttribute('lang', lang);
+      localStorage.setItem('language', lang);
+      
+      // 更新所有带有data-lang属性的元素
+      const elements = document.querySelectorAll('[data-lang]');
+      elements.forEach(element => {
+        const key = element.textContent.trim();
+        if (translations[lang] && translations[lang][key]) {
+          element.textContent = translations[lang][key];
+        }
+      });
+    }
+    
+    // 更新活动语言按钮状态
+    function updateActiveLangButton(lang) {
+      langZhBtn.classList.remove('active');
+      langEnBtn.classList.remove('active');
+      
+      if (lang === 'zh') {
+        langZhBtn.classList.add('active');
+      } else {
+        langEnBtn.classList.add('active');
+      }
+    }
+    
+    // 事件监听
+    langZhBtn.addEventListener('click', () => {
+      setLanguage('zh');
+      updateActiveLangButton('zh');
+    });
+    
+    langEnBtn.addEventListener('click', () => {
+      setLanguage('en');
+      updateActiveLangButton('en');
+    });
+    
+    // 主题切换功能
+    const lightThemeBtn = document.getElementById('light-theme');
+    const darkThemeBtn = document.getElementById('dark-theme');
+    const systemThemeBtn = document.getElementById('system-theme');
+    
+    // 初始化主题
+    function initTheme() {
+      const savedTheme = localStorage.getItem('theme') || 'system';
+      setTheme(savedTheme);
+      updateActiveThemeButton(savedTheme);
+    }
+    
+    // 设置主题
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+      
+      if (theme === 'system') {
+        // 跟随系统主题
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.setAttribute('data-theme', systemPrefersDark ? 'dark' : 'light');
+      }
+    }
+    
+    // 更新活动主题按钮状态
+    function updateActiveThemeButton(theme) {
+      lightThemeBtn.classList.remove('active');
+      darkThemeBtn.classList.remove('active');
+      systemThemeBtn.classList.remove('active');
+      
+      if (theme === 'light') {
+        lightThemeBtn.classList.add('active');
+      } else if (theme === 'dark') {
+        darkThemeBtn.classList.add('active');
+      } else {
+        systemThemeBtn.classList.add('active');
+      }
+    }
+    
+    // 事件监听
+    lightThemeBtn.addEventListener('click', () => {
+      setTheme('light');
+      updateActiveThemeButton('light');
+    });
+    
+    darkThemeBtn.addEventListener('click', () => {
+      setTheme('dark');
+      updateActiveThemeButton('dark');
+    });
+    
+    systemThemeBtn.addEventListener('click', () => {
+      setTheme('system');
+      updateActiveThemeButton('system');
+    });
+    
+    // 监听系统主题变化
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      if (localStorage.getItem('theme') === 'system') {
+        setTheme('system');
+      }
+    });
+    
+    // 初始化
+    initTheme();
+    initLanguage();
+  </script>
+</body>
+</html>

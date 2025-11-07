@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quick Download Station</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* 基础样式重置 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    }
+    
+    :root {
+      --bg-color: #f5f7fa;
+      --card-bg: #ffffff;
+      --text-color: #2c3e50;
+      --subtext-color: #5a6c7d;
+      --accent-color: #00c853;
+      --accent-gradient: linear-gradient(135deg, #00c853 0%, #64dd17 100%);
+      --shadow-color: rgba(0, 0, 0, 0.08);
+      --footer-color: #7f8c8d;
+    }
+    
+    [data-theme="dark"] {
+      --bg-color: #1a1a1a;
+      --card-bg: #2d2d2d;
+      --text-color: #e0e0e0;
+      --subtext-color: #a0a0a0;
+      --accent-color: #00c853;
+      --accent-gradient: linear-gradient(135deg, #00c853 0%, #64dd17 100%);
+      --shadow-color: rgba(0, 0, 0, 0.3);
+      --footer-color: #a0a0a0;
+    }
+    
+    body {
+      background: linear-gradient(135deg, var(--bg-color) 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--text-color);
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    
+    /* 标题样式 */
+    .header {
+      text-align: center;
+      margin: 40px 0 60px;
+      position: relative;
+    }
+    
+    .title {
+      font-size: 42px;
+      font-weight: 800;
+      margin-bottom: 10px;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 2px 10px rgba(0, 200, 83, 0.2);
+    }
+    
+    .subtitle {
+      font-size: 18px;
+      color: var(--subtext-color);
+      font-weight: 500;
+    }
+    
+    /* 控制面板 */
+    .control-panel {
+      display: flex;
+      gap: 15px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .control-btn {
+      background: var(--card-bg);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 30px;
+      color: var(--text-color);
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 15px var(--shadow-color);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+    
+    .control-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px var(--shadow-color);
+    }
+    
+    .control-btn.active {
+      background: var(--accent-gradient);
+      color: white;
+    }
+    
+    /* 作者信息样式 */
+    .author-info {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 15px;
+      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 30px;
+      box-shadow: 0 4px 15px var(--shadow-color);
+      backdrop-filter: blur(5px);
+    }
+    
+    [data-theme="dark"] .author-info {
+      background: rgba(45, 45, 45, 0.7);
+    }
+    
+    .author-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--accent-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      margin-right: 12px;
+    }
+    
+    .author-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-color);
+    }
+    
+    /* 整个按钮组 */
+    .btn-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+      width: 100%;
+      max-width: 1200px;
+      margin-bottom: 60px;
+    }
+    
+    /* 单个按钮样式 */
+    .link-card {
+      display: flex;
+      flex-direction: column;
+      background: var(--card-bg);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px var(--shadow-color);
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: inherit;
+    }
+    
+    .link-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 35px var(--shadow-color);
+    }
+    
+    .card-header {
+      background: var(--accent-gradient);
+      height: 6px;
+    }
+    
+    .card-content {
+      padding: 25px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    .card-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      background: var(--accent-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 22px;
+      font-weight: bold;
+    }
+    
+    .card-text {
+      flex: 1;
+    }
+    
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-color);
+      margin-bottom: 5px;
+    }
+    
+    .card-desc {
+      font-size: 14px;
+      color: var(--subtext-color);
+    }
+    
+    .card-arrow {
+      color: #bdc3c7;
+      font-size: 20px;
+      transition: all 0.3s ease;
+    }
+    
+    .link-card:hover .card-arrow {
+      color: var(--accent-color);
+      transform: translateX(5px);
+    }
+    
+    /* 页脚样式 */
+    .footer {
+      margin-top: auto;
+      text-align: center;
+      padding: 20px;
+      color: var(--footer-color);
+      font-size: 14px;
+    }
+    
+    .version {
+      margin-top: 5px;
+      font-size: 12px;
+      opacity: 0.7;
+    }
+    
+    /* 响应式调整 */
+    @media (max-width: 768px) {
+      .title {
+        font-size: 32px;
+      }
+      
+      .btn-group {
+        grid-template-columns: 1fr;
+      }
+      
+      .card-content {
+        padding: 20px;
+      }
+      
+      .author-info {
+        flex-direction: column;
+        text-align: center;
+        padding: 15px;
+      }
+      
+      .author-avatar {
+        margin-right: 0;
+        margin-bottom: 8px;
+      }
+      
+      .control-panel {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 标题区域 -->
+  <div class="header">
+    <h1 class="title" data-lang="zh">Quick Download Station</h1>
+    <p class="subtitle" data-lang="zh">一站式资源下载中心</p>
+    
+    <!-- 控制面板 -->
+    <div class="control-panel">
+      <button class="control-btn" id="light-theme">
+        <i class="fas fa-sun"></i>
+        <span data-lang="zh">浅色</span>
+      </button>
+      <button class="control-btn" id="dark-theme">
+        <i class="fas fa-moon"></i>
+        <span data-lang="zh">深色</span>
+      </button>
+      <button class="control-btn active" id="system-theme">
+        <i class="fas fa-desktop"></i>
+        <span data-lang="zh">跟随系统</span>
+      </button>
+      <button class="control-btn" id="lang-zh">
+        <i class="fas fa-language"></i>
+        <span>中文</span>
+      </button>
+      <button class="control-btn" id="lang-en">
+        <i class="fas fa-language"></i>
+        <span>English</span>
+      </button>
+      <a class="control-btn" href="contact.html">
+        <i class="fas fa-envelope"></i>
+        <span data-lang="zh">联系作者</span>
+      </a>
+    </div>
+    
+    <!-- 作者信息 -->
+    <div class="author-info">
+      <div class="author-avatar">
+        <i class="fas fa-user"></i>
+      </div>
+      <div class="author-name">作者: kyle_A_10000</div>
+    </div>
+  </div>
+
+  <!-- 下载按钮组 -->
+  <div class="btn-group">
+    <a class="link-card" href="https://wwye.lanzouu.com/iPjKr37xznli" target="_blank">
+      <div class="card-header"></div>
+      <div class="card-content">
+        <div class="card-icon">B</div>
+        <div class="card-text">
+          <div class="card-title" data-lang="zh">Bloxd.io Hack</div>
+          <div class="card-desc" data-lang="zh">Bloxd.io外挂</div>
+        </div>
+        <div class="card-arrow">→</div>
+      </div>
+    </a>
+    
+    <a class="link-card" href="https://wwye.lanzouu.com/iqeIT38ow97e" target="_blank">
+      <div class="card-header"></div>
+      <div class="card-content">
+        <div class="card-icon">P</div>
+        <div class="card-text">
+          <div class="card-title" data-lang="zh">XLC's Pic and Vid V1</div>
+          <div class="card-desc" data-lang="zh">黑料 需要密码</div>
+        </div>
+        <div class="card-arrow">→</div>
+      </div>
+    </a>
+    
+    <a class="link-card" href="https://jiyukiller-lts.pages.dev/" target="_blank">
+      <div class="card-header"></div>
+      <div class="card-content">
+        <div class="card-icon">J</div>
+        <div class="card-text">
+          <div class="card-title" data-lang="zh">极域破解LTS</div>
+          <div class="card-desc" data-lang="zh">破解极域长期支持版本</div>
+        </div>
+        <div class="card-arrow">→</div>
+      </div>
+    </a>
+    
+    <a class="link-card" href="https://qvgithub.pages.dev/" target="_blank">
+      <div class="card-header"></div>
+      <div class="card-content">
+        <div class="card-icon">G</div>
+        <div class="card-text">
+          <div class="card-title" data-lang="zh">快速访问GitHub方法</div>
+          <div class="card-desc" data-lang="zh">网络优化工具</div>
+        </div>
+        <div class="card-arrow">→</div>
+      </div>
+    </a>
+    
+    <a class="link-card" href="https://keystrike.pages.dev" target="_blank">
+      <div class="card-header"></div>
+      <div class="card-content">
+        <div class="card-icon">K</div>
+        <div class="card-text">
+          <div class="card-title" data-lang="zh">Key Strike</div>
+          <div class="card-desc" data-lang="zh">键盘显示</div>
+        </div>
+        <div class="card-arrow">→</div>
+      </div>
+    </a>
+    
+    <!-- 新增的两个按钮 -->
+    <a class="link-card" href="https://pydoom.pages.dev/" target="_blank">
+      <div class="card-header"></div>
+      <div class="card-content">
+        <div class="card-icon">D</div>
+        <div class="card-text">
+          <div class="card-title" data-lang="zh">Pydoom</div>
+          <div class="card-desc" data-lang="zh">用python模仿Doom</div>
+        </div>
+        <div class="card-arrow">→</div>
+      </div>
+    </a>
+    
+    <a class="link-card" href="https://trashkiller.pages.dev/" target="_blank">
+      <div class="card-header"></div>
+      <div class="card-content">
+        <div class="card-icon">W</div>
+        <div class="card-text">
+          <div class="card-title" data-lang="zh">Windows trash killer</div>
+          <div class="card-desc" data-lang="zh">Windows回收站自动清理</div>
+        </div>
+        <div class="card-arrow">→</div>
+      </div>
+    </a>
+  </div>
+
+  <!-- 页脚 -->
+  <div class="footer">
+    <p data-lang="zh">© 2025 kyle_A_10000 Quick Download Station | 所有资源由kyle_A_10000制作/搬运</p>
+    <p class="version">V4</p>
+  </div>
+
+  <script>
+    // 语言切换功能
+    const langZhBtn = document.getElementById('lang-zh');
+    const langEnBtn = document.getElementById('lang-en');
+    
+    // 语言文本映射
+    const translations = {
+      zh: {
+        // 标题
+        "Quick Download Station": "Quick Download Station",
+        "一站式资源下载中心": "一站式资源下载中心",
+        
+        // 主题按钮
+        "浅色": "浅色",
+        "深色": "深色",
+        "跟随系统": "跟随系统",
+        
+        // 联系按钮
+        "联系作者": "联系作者",
+        
+        // 按钮文本
+        "Bloxd.io Hack": "Bloxd.io Hack",
+        "Bloxd.io外挂": "Bloxd.io外挂",
+        "XLC's Pic and Vid V1": "XLC's Pic and Vid V1",
+        "黑料 需要密码": "黑料 需要密码",
+        "极域破解LTS": "极域破解LTS",
+        "破解极域长期支持版本": "破解极域长期支持版本",
+        "快速访问GitHub方法": "快速访问GitHub方法",
+        "网络优化工具": "网络优化工具",
+        "Key Strike": "Key Strike",
+        "键盘显示": "键盘显示",
+        "Pydoom": "Pydoom",
+        "用python模仿Doom": "用python模仿Doom",
+        "Windows trash killer": "Windows trash killer",
+        "Windows回收站自动清理": "Windows回收站自动清理",
+        
+        // 页脚
+        "© 2025 kyle_A_10000 Quick Download Station | 所有资源由kyle_A_10000制作/搬运": "© 2025 kyle_A_10000 Quick Download Station | 所有资源由kyle_A_10000制作/搬运"
+      },
+      en: {
+        // 标题
+        "Quick Download Station": "Quick Download Station",
+        "一站式资源下载中心": "One-stop Resource Download Center",
+        
+        // 主题按钮
+        "浅色": "Light",
+        "深色": "Dark",
+        "跟随系统": "System",
+        
+        // 联系按钮
+        "联系作者": "Contact",
+        
+        // 按钮文本
+        "Bloxd.io Hack": "Bloxd.io Hack",
+        "Bloxd.io外挂": "Bloxd.io Cheat",
+        "XLC's Pic and Vid V1": "XLC's Pic and Vid V1",
+        "黑料 需要密码": "Black material - Password required",
+        "极域破解LTS": "JiYu Killer LTS",
+        "破解极域长期支持版本": "Crack JiYu long-term support version",
+        "快速访问GitHub方法": "Fast GitHub Access Method",
+        "网络优化工具": "Network optimization tool",
+        "Key Strike": "Key Strike",
+        "键盘显示": "Keyboard display",
+        "Pydoom": "Pydoom",
+        "用python模仿Doom": "Make Doom in Python",
+        "Windows trash killer": "Windows trash killer",
+        "Windows回收站自动清理": "Auto clean the trash bin in Windows",
+        
+        // 页脚
+        "© 2025 kyle_A_10000 Quick Download Station | 所有资源由kyle_A_10000制作/搬运": "© 2025 kyle_A_10000 Quick Download Station | All resources created/curated by kyle_A_10000"
+      }
+    };
+
+    // 初始化语言
+    function initLanguage() {
+      const savedLang = localStorage.getItem('language') || 'zh';
+      setLanguage(savedLang);
+      updateActiveLangButton(savedLang);
+    }
+    
+    // 设置语言
+    function setLanguage(lang) {
+      document.documentElement.setAttribute('lang', lang);
+      localStorage.setItem('language', lang);
+      
+      // 更新所有带有data-lang属性的元素
+      const elements = document.querySelectorAll('[data-lang]');
+      elements.forEach(element => {
+        const key = element.textContent.trim();
+        if (translations[lang] && translations[lang][key]) {
+          element.textContent = translations[lang][key];
+        }
+      });
+    }
+    
+    // 更新活动语言按钮状态
+    function updateActiveLangButton(lang) {
+      langZhBtn.classList.remove('active');
+      langEnBtn.classList.remove('active');
+      
+      if (lang === 'zh') {
+        langZhBtn.classList.add('active');
+      } else {
+        langEnBtn.classList.add('active');
+      }
+    }
+    
+    // 事件监听
+    langZhBtn.addEventListener('click', () => {
+      setLanguage('zh');
+      updateActiveLangButton('zh');
+    });
+    
+    langEnBtn.addEventListener('click', () => {
+      setLanguage('en');
+      updateActiveLangButton('en');
+    });
+    
+    // 主题切换功能
+    const lightThemeBtn = document.getElementById('light-theme');
+    const darkThemeBtn = document.getElementById('dark-theme');
+    const systemThemeBtn = document.getElementById('system-theme');
+    
+    // 初始化主题
+    function initTheme() {
+      const savedTheme = localStorage.getItem('theme') || 'system';
+      setTheme(savedTheme);
+      updateActiveThemeButton(savedTheme);
+    }
+    
+    // 设置主题
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+      
+      if (theme === 'system') {
+        // 跟随系统主题
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.setAttribute('data-theme', systemPrefersDark ? 'dark' : 'light');
+      }
+    }
+    
+    // 更新活动主题按钮状态
+    function updateActiveThemeButton(theme) {
+      lightThemeBtn.classList.remove('active');
+      darkThemeBtn.classList.remove('active');
+      systemThemeBtn.classList.remove('active');
+      
+      if (theme === 'light') {
+        lightThemeBtn.classList.add('active');
+      } else if (theme === 'dark') {
+        darkThemeBtn.classList.add('active');
+      } else {
+        systemThemeBtn.classList.add('active');
+      }
+    }
+    
+    // 事件监听
+    lightThemeBtn.addEventListener('click', () => {
+      setTheme('light');
+      updateActiveThemeButton('light');
+    });
+    
+    darkThemeBtn.addEventListener('click', () => {
+      setTheme('dark');
+      updateActiveThemeButton('dark');
+    });
+    
+    systemThemeBtn.addEventListener('click', () => {
+      setTheme('system');
+      updateActiveThemeButton('system');
+    });
+    
+    // 监听系统主题变化
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      if (localStorage.getItem('theme') === 'system') {
+        setTheme('system');
+      }
+    });
+    
+    // 初始化
+    initTheme();
+    initLanguage();
+  </script>
+</body>
+</html>
